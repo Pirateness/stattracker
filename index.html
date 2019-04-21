@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<link href="indexstyle.css" rel="stylesheet" type="text/css">
+</head>
+<body onload="">
+	<div class="navbarcontainer">
+		<div class="navbar">
+	  <a href="#home">Home</a>
+	  <a href="#news">About</a>
+	  <div class="dropdown">
+		<button class="dropbtn">Games 
+		  <i class="fa fa-caret-down"></i>
+		</button>
+		<div class="dropdown-content">
+		  <a href="#">Apex Legends</a>
+		  <a href="#">Overwatch</a>
+		  <a href="#">Destiny 2</a>
+		</div>
+	  </div>
+		<form class="searchbar" onSubmit="return false">
+		<input name="username" id="myInput" type="text" placeholder="Search for a player">
+		<button type="button" id="myBtn" onClick="initialise()">Button</button>
+	</form>
+	</div>
+	</div>
+	
+	<h2 id="playerName">Placeholder</h2>
+	
+	<div id="playerLevel">Placeholder</div>
+	
+    <svg class="playerinfocontainer" width="400" height="210">
+  	  <rect rx="10" ry="10" width="300" height="200" style="fill:rgb(54,57,63)" />
+	</svg>
+	
+    <script>
+	function initialise(){
+		initPlayer()
+	}
+		
+	function refreshPlayerDetails(){
+		  var xhttp = new XMLHttpRequest();
+		  xhttp.onreadystatechange = function() {
+			  if (this.readyState == 4 && this.status == 200) {
+				  // Typical action to be performed when the document is ready:
+				  var myObj, x;
+				  myObj = JSON.parse(xhttp.responseText)
+				  x = myObj.values;
+				  updatePlayer();
+			  }
+		  };
+		  xhttp.open("GET", "https://apextab.com/" + playeraid, true);
+		  xhttp.send();
+	}
+		
+	function getQueryVariable(variable)
+	{
+       var query = window.location.search.substring(1);
+       var vars = query.split("&");
+       for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");
+               if(pair[0] == variable){return pair[1];}
+       }
+       return(false);
+	}
+		
+    function httpGetAsync()
+    {
+      var xhttp = new XMLHttpRequest();
+	  xhttp.onreadystatechange = function() {
+    	  if (this.readyState == 4 && this.status == 200) {
+		      // Typical action to be performed when the document is ready:
+			  var myObj, x;
+			  myObj = JSON.parse(xhttp.responseText)
+			  x = myObj.values;
+			  document.getElementById("demo").innerHTML = x;
+          }
+      };
+	  xhttp.open("GET", "https://sheets.googleapis.com/v4/spreadsheets/177_GAEmhXoa9wZ6agvT62gawJtkqspUXtY4ftLKGpfA/values/Users?range=A1&key=AIzaSyCNt2sTcLt9T33EyQdkDfDTDENdXddWtRE", true);
+	  xhttp.send();
+    }
+		
+	function initPlayer(){
+		  var varPlayerName = document.getElementsByName("username")[0].value;
+	      console.log(varPlayerName)
+		  var xhttp = new XMLHttpRequest();
+		  xhttp.onreadystatechange = function() {
+			  if (this.readyState == 4 && this.status == 200) {
+				  // Typical action to be performed when the document is ready:
+				  var myObj, x;
+				  myObj = JSON.parse(xhttp.responseText)
+				  x = myObj.results;
+				  playeraid = x[0].aid
+				  document.getElementById("playerName").innerHTML = varPlayerName
+				  console.log(playeraid)
+				  refreshPlayerDetails()
+			  }
+		  };
+		  xhttp.open("GET", "https://apextab.com/api/search.php?platform=pc&search=" + varPlayerName, true);
+		  xhttp.send();
+	}
+		
+	function updatePlayer(){
+		  var xhttp = new XMLHttpRequest();
+		  xhttp.onreadystatechange = function() {
+			  if (this.readyState == 4 && this.status == 200) {
+				  // Typical action to be performed when the document is ready:
+				  var myObj, x;
+				  myObj = JSON.parse(xhttp.responseText)
+				  x = myObj.level;
+				  document.getElementById("playerLevel").innerHTML = "Level " + x;
+				  console.log(x)
+			  }
+		  };
+		  xhttp.open("GET", "https://apextab.com/api/player.php?aid=" + playeraid + "&updatenow=true", true);
+		  xhttp.send();
+	}
+    </script>
+	
+	<script>
+	var input = document.getElementById("myInput");
+	input.addEventListener("keyup", function(event) {
+	  if (event.keyCode === 13) {
+	   event.preventDefault();
+	   document.getElementById("myBtn").click();
+	  }
+	});
+	</script>
+</body>
+</html>
